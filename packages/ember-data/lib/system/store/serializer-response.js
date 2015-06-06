@@ -197,7 +197,7 @@ export function pushPayloadIncluded(store, payload) {
   @return {DS.Model} a record
 */
 export function _pushResourceObject(store, resourceObject) {
-  return store.push(resourceObject.type, convertResourceObject(resourceObject));
+  return store.push(resourceObject);
 }
 
 /**

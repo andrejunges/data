@@ -190,7 +190,7 @@ InternalModel.prototype = {
   },
 
   setupData: function(data) {
-    var changedKeys = mergeAndReturnChangedKeys(this._data, data);
+    var changedKeys = mergeAndReturnChangedKeys(this._data, data.attributes);
     this.pushedData();
     if (this.record) {
       this.record._notifyProperties(changedKeys);

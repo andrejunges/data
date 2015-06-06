@@ -1436,9 +1436,9 @@ Store = Service.extend({
     @param {(String|DS.Model)} type
     @param {Object} data
   */
-  _load: function(type, data) {
+  _load: function(data) {
     var id = coerceId(data.id);
-    var internalModel = this._internalModelForId(type, id);
+    var internalModel = this._internalModelForId(data.type, id);
 
     internalModel.setupData(data);
 
@@ -1599,9 +1599,19 @@ Store = Service.extend({
     @return {DS.Model|Array} the record(s) that was created or
       updated.
   */
-  push: function(modelName, data) {
+  push: function(modelNameArg, dataArg) {
+    var data, modelName;
+
+    if (Ember.typeOf(modelNameArg) === 'object' && Ember.typeOf(dataArg) === 'undefined') {
+      data = modelNameArg;
+      modelName = data.type;
+    } else {
+      data = dataArg;
+      modelName = modelNameArg;
+    }
+
     Ember.assert('Passing classes to store methods has been removed. Please pass a dasherized string instead of '+ Ember.inspect(modelName), typeof modelName === 'string');
-    var internalModel = this._pushInternalModel(modelName, data);
+    var internalModel = this._pushInternalModel(data);
     if (Ember.isArray(internalModel)) {
       return map(internalModel, (item) => {
         return item.getRecord();
@@ -1610,10 +1620,8 @@ Store = Service.extend({
     return internalModel.getRecord();
   },
 
-  _pushInternalModel: function(modelName, data) {
-    if (Ember.typeOf(modelName) === 'object' && Ember.typeOf(data) === 'undefined') {
-      return pushPayload(this, modelName);
-    }
+  _pushInternalModel: function(data) {
+    var modelName = data.type;
     Ember.assert("Expected an object as `data` in a call to `push` for " + modelName + " , but was " + Ember.typeOf(data), Ember.typeOf(data) === 'object');
     Ember.assert("You must include an `id` for " + modelName + " in an object passed to `push`", data.id != null && data.id !== '');
 
@@ -1622,6 +1630,7 @@ Store = Service.extend({
 
     // If Ember.ENV.DS_WARN_ON_UNKNOWN_KEYS is set to true and the payload
     // contains unknown keys, log a warning.
+
     if (Ember.ENV.DS_WARN_ON_UNKNOWN_KEYS) {
       Ember.warn("The payload for '" + type.modelName + "' contains these unknown keys: " +
         Ember.inspect(filter(Ember.keys(data), function(key) {
@@ -1634,7 +1643,7 @@ Store = Service.extend({
     }
 
     // Actually load the record into the store.
-    var internalModel = this._load(modelName, data);
+    var internalModel = this._load(data);
 
     var store = this;
 
