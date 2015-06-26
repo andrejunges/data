@@ -53,8 +53,33 @@ module('integration/relationships/polymorphic_mixins_has_many_test - Polymorphic
 test("Relationship is available from the belongsTo side even if only loaded from the hasMany side - async", function () {
   var user, video;
   run(function() {
-    user = store.push('user', { id: 1, name: 'Stanley', messages: [{ id: 2, type: 'video' }] });
-    video = store.push('video', { id: 2, video: 'Here comes Youtube' });
+    user = store.push({
+        data: {
+            id: '1',
+            type: 'user',
+            attributes: {
+                name: 'Stanley'
+            },
+            relationships: {
+                messages: {
+                    data: [{
+                        id: '2',
+                        type: 'video'
+                    }]
+                }
+            }
+        }
+    });
+    video = store.push({
+        data: {
+            id: '2',
+            type: 'video',
+            attributes: {
+                video: 'Here comes Youtube'
+            }
+        }
+    });
+
   });
   run(function() {
     user.get('messages').then(function(messages) {
@@ -72,8 +97,30 @@ test("Relationship is available from the belongsTo side even if only loaded from
 test("Pushing to the hasMany reflects the change on the belongsTo side - async", function () {
   var user, video;
   run(function() {
-    user = store.push('user', { id: 1, name: 'Stanley', messages: [] });
-    video = store.push('video', { id: 2, video: 'Here comes Youtube' });
+    user = store.push({
+        data: {
+            id: '1',
+            type: 'user',
+            attributes: {
+                name: 'Stanley'
+            },
+            relationships: {
+                messages: {
+                    data: []
+                }
+            }
+        }
+    });
+    video = store.push({
+        data: {
+            id: '2',
+            type: 'video',
+            attributes: {
+                video: 'Here comes Youtube'
+            }
+        }
+    });
+
   });
 
   run(function() {
@@ -92,8 +139,8 @@ test("Pushing to the hasMany reflects the change on the belongsTo side - async",
 test("Pushing a an object that does not implement the mixin to the mixin accepting array errors out", function () {
   var user,notMessage;
   run(function() {
-    user = store.push('user', { id: 1, name: 'Stanley', messages: [] });
-    notMessage = store.push('not-message', { id: 2, video: 'Here comes Youtube' });
+    user = store.push('user', { id: '1', name: 'Stanley', messages: [] });
+    notMessage = store.push('not-message', { id: '2', video: 'Here comes Youtube' });
   });
 
   run(function() {
@@ -112,8 +159,8 @@ test("Pushing to the hasMany reflects the change on the belongsTo side - model i
   try {
     var user, video;
     run(function() {
-      user = store.push('user', { id: 1, name: 'Stanley', messages: [] });
-      video = store.push('video', { id: 2, video: 'Here comes Youtube' });
+      user = store.push('user', { id: '1', name: 'Stanley', messages: [] });
+      video = store.push('video', { id: '2', video: 'Here comes Youtube' });
     });
 
     run(function() {
@@ -139,8 +186,8 @@ test("Pushing a an object that does not implement the mixin to the mixin accepti
   try {
     var user,notMessage;
     run(function() {
-      user = store.push('user', { id: 1, name: 'Stanley', messages: [] });
-      notMessage = store.push('not-message', { id: 2, video: 'Here comes Youtube' });
+      user = store.push('user', { id: '1', name: 'Stanley', messages: [] });
+      notMessage = store.push('not-message', { id: '2', video: 'Here comes Youtube' });
     });
 
     run(function() {
